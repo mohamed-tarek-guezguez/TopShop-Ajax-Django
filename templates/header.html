@@ -1,0 +1,56 @@
+{% load static %}
+<nav class="navbar sticky-top navbar-expand-lg navbar-dark" style="height:80px; background-color: #232F3E;">
+    <div class="container" style="background-color: #232F3E;">
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-mdb-toggle="collapse"
+            data-mdb-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+        >
+            <i class="fas fa-bars"></i>
+        </button>
+    
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <a class="navbar-brand mt-2 mt-lg-0" href="{% url 'products' %}">
+            <img
+                src="{% static 'img/logo.png' %}"
+                height="35"
+                alt=""
+                loading="lazy"
+            />
+            </a>
+            <div class="navbar-nav me-auto mb-2 mb-lg-0">
+                <form id="searchFrm">
+                    <div class="input-group mt-2 mb-2" id="mobileSearchBar">
+                        <input type="search" id="searchInput" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" style="border: 2px solid #FEBD69; border-radius: 0 !important;" />
+                        <button type="submit" class="btn btn-primary" style="background-color: #FEBD69;">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    
+        <div class="d-flex align-items-center text-white-50 mt-2 mb-2">
+            <a class="text-reset me-3" href="#">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="badge rounded-pill badge-notification bg-danger">0</span>
+                &nbsp;&nbsp;Cart
+            </a>
+
+            {% if user.is_authenticated %}
+                Hi {{ user.username }}!&nbsp;&nbsp;
+                <a class="text-reset me-3 btn btn-sm btn-danger" href="{% url 'logout' %}" style="color: white !important;">
+                    Logout
+                </a>
+            {% else %}
+                <a class="text-reset me-3" href="{% url 'login' %}">
+                    <i class="fas fa-user"></i>&nbsp;&nbsp;Login
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</nav>

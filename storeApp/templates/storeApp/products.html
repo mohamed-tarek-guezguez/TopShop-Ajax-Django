@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5">
+    <div class="spinner-border" role="status" id="spinner" style="display: none;">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-4 g-4" id="display">
+        <!-- display products with ajax-->
+    </div>
+
+    <div id="displayError">
+        <!-- display error with ajax-->
+    </div>
+
+    <div id="displayPagination" class="mt-5">
+        <!-- display pagination with ajax-->
+    </div>
+</div>
+
+{% endblock %}

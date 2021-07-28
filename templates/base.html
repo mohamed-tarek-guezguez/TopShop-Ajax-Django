@@ -1,0 +1,343 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store App</title>
+    <link rel="icon" href="{% static 'img/icon.ico' %}" type="image/x-icon" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" />
+    <link rel="stylesheet" href="{% static 'css/mdb.min.css' %}" />
+
+    <style>
+        .form-control:focus {
+            box-shadow: 0 0 0 0 #FEBD69 !important;
+            border-radius: 0 !important;
+            border: 2px solid #FEBD69; 
+        } 
+
+        li.active > a{
+            background-color: #FF9D1A !important;
+        }
+
+        #spinner {
+            position: fixed;
+            z-index: 999;
+            overflow: show;
+            margin: auto;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            width: 50px;
+            height: 50px;
+        }
+
+        .rating-outer {
+            display: inline-block;
+            position: relative;
+            font-family: FontAwesome;
+            color: #fdcc0d;
+            font-size: 18px;
+            letter-spacing: .1rem;
+        }
+
+        .rating-outer::before {
+            content: '\f006 \f006 \f006 \f006 \f006';
+        }
+
+        .rating-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            width: 0;
+        }
+
+        .rating-inner::before {
+            content: '\f005 \f005 \f005 \f005 \f005';
+            color: #f8ce0b;
+        }
+
+        .star-container {
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .star-widget input {
+            display: none;
+        }
+
+        .star-widget label {
+            font-size: 24px;
+            float: right;
+            padding: 10px;
+            transition: all 0.2s ease;
+        }
+
+        input:not(:checked) ~ label:hover,
+        input:not(:checked) ~ label:hover ~ label {
+            color: #fd4;
+        }
+
+        input:checked ~ label {
+            color: #fd4;
+        }
+
+        input#rate-5:checked ~ label {
+            color: #fe7;
+            text-shadow: 0 0 20px #952;
+        }
+
+        #id_username, #id_email {
+            margin-bottom: 25px;
+        }
+
+        #hint_id_username {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    {% include "header.html" %}
+    
+    {% block content %}
+    {% endblock content %}
+    
+    {% include "footer.html" %}
+
+    <script type="text/javascript" src="{% static 'js/mdb.min.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function fetchProducts(page = localStorage.getItem('page') || 1) {
+            const q = $('#searchInput').val()
+            $('#display').empty()
+            $('#displayError').empty()
+            $('#displayPagination').empty()
+            $('#spinner').show()
+            $.ajax({
+                type: 'GET',
+                url: "{% url 'fetchProducts' %}",
+                data: {
+                    'q': q,
+                    'page': page
+                },
+                dataType: "json",
+                success: function(response) {
+                    if (response.products.length === 0) {
+                        var tempError = `
+                            <div class="alert alert-danger" role="alert">
+                                No results found!
+                            </div>
+                        `
+                        $('#displayError').append(tempError)
+                    } else {
+                        var temp = ``
+                        for (var key in response.products) {
+                            temp += `
+                                <div class="col">
+                                    <div class="card h-100">
+                                        <div class="img-hover-zoom h-100">
+                                        <a href="${response.products[key].Slug}">
+                                            <img src="/media/${response.products[key].Img}" class="card-img-top p-3 h-100" alt="..." style="min-height: 200px;" />
+                                        </a>
+                                        </div>
+                                        <div class="card-body">
+                                            <h5 class="card-title">
+                                                <a href="${response.products[key].Slug}" class="text-dark">${response.products[key].Title}</a>
+                                            </h5>
+                                            <div class="rating-outer">
+                                                <div class="rating-inner" style="width: ${response.products[key].totalRating}%;"></div>
+                                            </div>
+                                            <span id="no_of_reviews">(${response.products[key].number_of_reviews} Reviews)</span>
+                                            <p class="card-text mt-2">$${(response.products[key].Price).toFixed(2)}</p>
+                                            <a href="${response.products[key].Slug}" class="btn m-1 w-100 text-white" data-mdb-ripple-color="dark" style="padding-left: 15px; padding-right: 15px; background-color: #FA9C23;">View Details</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            `
+                        }    
+                        $('#display').append(temp)     
+                        
+                        $('#displayPagination').empty()
+                        var paginationTemplate = `
+                            <ul class="pagination justify-content-center">
+                        `
+
+                        if (response.has_previous) {
+                            paginationTemplate += `
+                                <li class="page-item" style="border: solid 1px #E9ECEF; border-radius: 6px 0 0 6px;">
+                                    <a class="page-link btnPagination" href="javascript:void(0)">«</a>
+                                </li>
+                            `
+                        }
+
+                        if (response.num_pages > 1) {
+                            for (let i=response.page_rangeStart; i<response.page_rangeEnd; i++) {
+                                if (response.page == i) {
+                                    paginationTemplate += `
+                                        <li class="page-item active"><a class="page-link" href="javascript:void(0)" style="border-radius: 0;" id="current">${ i }</a></li>
+                                    `
+                                } else {
+                                    paginationTemplate += `
+                                        <li class="page-item" style="border: solid 1px #E9ECEF;"><a class="page-link btnPagination" href="javascript:void(0)">${ i }</a></li>
+                                    `
+                                }
+                            }
+                        }
+
+                        if (response.has_next) {
+                            paginationTemplate += `
+                                <li class="page-item" style="border: solid 1px #E9ECEF; border-radius: 0 6px 6px 0;">
+                                    <a class="page-link btnPagination" href="javascript:void(0)">»</a>
+                                </li>
+                            `
+                        }
+
+                        paginationTemplate += `
+                            </ul>
+                        `
+                        $('#displayPagination').append(paginationTemplate)
+                    }
+                    $('#spinner').hide()
+                },
+                error: function(response) {
+                    console.log(response.statusText)
+                }
+            })
+        }
+        fetchProducts()
+
+        $('#searchFrm').on('submit', function(e) {
+            e.preventDefault()
+            fetchProducts()
+        })
+
+        $(document).on('click', '.btnPagination', function() {
+            current = document.getElementById('current').innerHTML
+            if (this.innerHTML == '«') {
+                page = parseInt(current) - 1
+            } else if (this.innerHTML == '»') {
+                page = parseInt(current) + 1
+            } else {
+                page = parseInt(this.innerHTML)
+            }
+            localStorage.setItem('page', page)
+            fetchProducts(page)
+        })
+
+        $("#submitReview").on('click', () => {
+            const rating = $('input[name=rate]:checked').val()
+            const comment = $("#commentInput").val()
+            if (rating) {
+                if (comment) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'addReview' %}",
+                        data: {
+                            'slug': '{{ product.Slug }}',
+                            'rating': rating,
+                            'comment': comment
+                        },
+                        dataType: "json",
+                        success: function(response) {
+                            if (response.exists) {
+                                $("#reviews-list").empty()
+                                var temp = ``
+                                for (var key in response.reviews) {
+                                    temp += `
+                                        <div class="card mb-4">
+                                            <div class="card-body">
+                                            <p>${response.reviews[key].comment}</p>
+                                
+                                            <div class="d-flex justify-content-between">
+                                                <div class="d-flex flex-row align-items-center">
+                                                    <i class="fa fa-user" aria-hidden="true"></i>
+                                                    <p class="small mb-0 mt-1 ms-2">${response.reviews[key].user}</p>
+                                                </div>
+                                                <div class="d-flex flex-row align-items-center">
+                                                    <div class="rating-outer">
+                                                        <div class="rating-inner" style="width: ${response.reviews[key].rating * 20}%;"></div>
+                                                    </div>
+                                                    &#160;
+                                                    <small>${response.reviews[key].rating}/5</small>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    `
+                                }
+                                $("#reviews-list").append(temp)
+                            } else {
+                                reviewTemplate = `
+                                    <div class="card mb-4">
+                                        <div class="card-body">
+                                        <p>${comment}</p>
+                            
+                                        <div class="d-flex justify-content-between">
+                                            <div class="d-flex flex-row align-items-center">
+                                                <i class="fa fa-user" aria-hidden="true"></i>
+                                                <p class="small mb-0 mt-1 ms-2">{{ user.username }}</p>
+                                            </div>
+                                            <div class="d-flex flex-row align-items-center">
+                                                <div class="rating-outer">
+                                                    <div class="rating-inner" style="width: ${rating * 20}%;"></div>
+                                                </div>
+                                                &#160;
+                                                <small>${rating}/5</small>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                `
+                                $("#reviews-list").prepend(reviewTemplate)
+                                $("#submitReview").html('UPDATE')
+                            }
+                            $("#commentInput").val('')
+                            $("input[name=rate]:checked").each(function () {
+                                this.checked = false
+                            })
+                            $("#numRev").html(response.number_of_reviews)
+                            $("#rate").css("width", response.totalRating)
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Your Review Submitted Successfully',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                        }
+                    })
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Comment field required.',
+                    })
+                }
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select a rating before submitting your feedback.',
+                })
+            }
+        })
+    </script>
+</body>
+</html>

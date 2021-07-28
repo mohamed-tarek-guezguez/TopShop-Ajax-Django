@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="card container my-5">
+    <h5 class="card-header text-center" style="background-color: #45637d; color: white;">Sign in</h5>
+    <div class="card-body">
+        <div class="modal-body">
+            <div class="text-center border border-light">
+              <form method="POST">
+                {% csrf_token %}
+                <fieldset class="form-group" style="text-align: left;">
+                    {{ form|crispy }}
+                </fieldset>
+                <div class="form-group">
+                  <button class="btn btn-outline-info my-4" type="submit">Sign in</button>
+                </div>
+              </form>
+        
+              <p>Not a member ? <a class="ml-2" href="{% url 'register' %}">Sign up Now</a></p>
+              <p>or sign in with:</p>
+              <a class="btn btn-primary" style="background-color: #dd4b39" href="" role="button"><i class="fab fa-google"></i></a>
+              <a class="btn btn-primary" style="background-color: #3b5998" href="" role="button"><i class="fab fa-facebook-f"></i></a>
+              <a class="btn btn-primary" style="background-color: #333333" href="" role="button"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+  
+{% endblock content %}

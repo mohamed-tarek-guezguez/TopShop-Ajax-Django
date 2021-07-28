@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container container-fluid">
+    <div class="row f-flex justify-content-around">
+        <div class="col-12 col-lg-5 img-fluid" id="product_image">
+            <img src="{{ product.Img.url }}" alt="sdf" class="p-4 w-100">
+        </div>
+
+        <div class="col-12 col-lg-5 mt-5">
+            <h3>{{ product.Title }}</h3>
+
+            <hr>
+
+            <div class="rating-outer">
+                <div class="rating-inner" id="rate" style="width: {{ product.totalRating }}%;"></div>
+            </div>
+            <span id="no_of_reviews">(<span id="numRev">{{ product.number_of_reviews }}</span> Reviews)</span>
+
+            <hr>
+
+            <h5>${{ product.Price|stringformat:".2f" }}</h5>
+           
+
+            <h6 class="mt-3">
+                Status: 
+                {% if product.Stock == 0 %}
+                    <span style="color: red;">Out Of Stock</span>
+                {% else %}
+                    <span style="color: green;">In Stock</span>
+                {% endif %}
+            </h6>
+
+            <hr>
+
+            <h4 class="mt-2">Description:</h4>
+            <p>{{ product.Description|safe }}</p>
+            
+            <hr>
+
+            <button type="button" class="btn mb-4" style="background-color: #FA9C23; color: #fff;">Add to Cart</button>
+        </div>
+
+        <hr>
+
+        <div class="container my-3">
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card shadow-0 border" style="background-color: #f0f2f5;">
+                        <div class="card-body p-4 pb-0">
+                            <center>
+                                <div class="card mb-4" style="width: 100%;">
+                                    <div class="card-body">
+                                        {% if user.is_authenticated %}
+                                        <h5 class="card-title">Submit Review :</h5>
+                
+                                        <div class="star-container">
+                                            <div class="star-widget">
+                                                <input type="radio" value="5" name="rate" id="rate-5">
+                                                <label for="rate-5" class="fa fa-star"></label>
+                                                <input type="radio" value="4" name="rate" id="rate-4">
+                                                <label for="rate-4" class="fa fa-star"></label>
+                                                <input type="radio" value="3" name="rate" id="rate-3">
+                                                <label for="rate-3" class="fa fa-star"></label>
+                                                <input type="radio" value="2" name="rate" id="rate-2">
+                                                <label for="rate-2" class="fa fa-star"></label>
+                                                <input type="radio" value="1" name="rate" id="rate-1">
+                                                <label for="rate-1" class="fa fa-star"></label>
+                                            </div>
+                                        </div>
+                    
+                                        <div class="form-group">
+                                            <textarea class="form-control" placeholder="Describe your experience." id="commentInput" rows="3"></textarea>
+                                        </div>
+                    
+                                        <div class="text-center mt-3">
+                                            <button type="button" id="submitReview" class="btn btn-sm" style="background-color: #FA9C23; color: #fff; border-radius: 25px;">
+                                                {% if exists %}
+                                                    Update
+                                                {% else %}
+                                                    Submit
+                                                {% endif %}
+                                            </button>
+                                        </div>
+                                        {% else %}
+                                        <div class="alert alert-danger" role="alert">
+                                            Login to post your review.
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </center>
+                            
+                            <div id="reviews-list">
+                                {% for r in reviews %}
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                    <p>{{ r.comment }}</p>
+                        
+                                    <div class="d-flex justify-content-between">
+                                        <div class="d-flex flex-row align-items-center">
+                                            <i class="fa fa-user" aria-hidden="true"></i>
+                                            <p class="small mb-0 mt-1 ms-2">{{ r.user }}</p>
+                                        </div>
+                                        <div class="d-flex flex-row align-items-center">
+                                            <div class="rating-outer">
+                                                <div class="rating-inner" style="width: {% widthratio r.rating 1 20 %}%;"></div>
+                                            </div>
+                                            &#160;
+                                            <small>{{ r.rating }}/5</small>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
