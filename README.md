@@ -2,8 +2,7 @@
 
 Learn how to build an E-commerce website with Django and Ajax .
 
-<img src="https://emojipedia-us.s3.amazonaws.com/content/2020/04/05/yt.png" alt="error" /> Youtube Channel :  https://www.youtube.com/channel/UCCN3FOyDifUTskAlSrnvCTg
-:yt:
+<img src="https://emojipedia-us.s3.amazonaws.com/content/2020/04/05/yt.png" alt="error" width="12px" /> Youtube Channel :  https://www.youtube.com/channel/UCCN3FOyDifUTskAlSrnvCTg
 
 ⭐️ Course ⭐️
 ⌨️ Part 00 - Project Demo
