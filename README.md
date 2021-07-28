@@ -1,6 +1,6 @@
 # TopShop-Ajax-Django
 
-Learn how to build an E-commerce website with Django and Ajax .
+Learn how to build an E-commerce website with Django and Ajax .</br></br>
 
 <img src="https://emojipedia-us.s3.amazonaws.com/content/2020/04/05/yt.png" alt="error" width="12px" />&#160;&#160;Youtube Channel :  https://www.youtube.com/channel/UCCN3FOyDifUTskAlSrnvCTg
 
